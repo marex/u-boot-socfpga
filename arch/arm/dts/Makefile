@@ -536,7 +536,7 @@ dtb-$(CONFIG_TARGET_STM32MP1) += \
 targets += $(dtb-y)
 
 # Add any required device tree compiler flags here
-DTC_FLAGS +=
+DTC_FLAGS += -p 0x1000
 
 PHONY += dtbs
 dtbs: $(addprefix $(obj)/, $(dtb-y))
