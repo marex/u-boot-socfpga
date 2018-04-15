@@ -1,0 +1,51 @@
+/*
+ * The fitImage source for Arria 10 SoCDK loading FPGA bitstream and U-Boot
+ *
+ * Copyright (C) 2018 Marek Vasut <marex@denx.de>
+ *
+ * SPDX-License-Identifier: GPL-2.0+  X11
+ */
+
+/dts-v1/;
+
+/ {
+	description = "FIT image with U-Boot proper and FPGA bitstream";
+	#address-cells = <1>;
+
+	images {
+		uboot {
+			description = "U-Boot (32-bit)";
+			data = /incbin/("../../../u-boot-nodtb.bin");
+			type = "standalone";
+			os = "U-Boot";
+			arch = "arm";
+			compression = "none";
+			load = <0x01000040>;
+			entry = <0x01000040>;
+		};
+
+		fdt {
+			description = "Arria10 SoCDK flat device-tree";
+			data = /incbin/("../../../u-boot.dtb");
+			type = "flat_dt";
+			compression = "none";
+		};
+
+		fpga {
+		        description = "FPGA bitstream";
+			data = /incbin/("../../../ghrd_10as066n2.rbf");
+			type = "fpga";
+			compression = "none";
+                };
+	};
+
+	configurations {
+		default = "conf";
+		conf {
+			description = "Altera Arria10 SoCDK";
+			loadables = "uboot";
+			fdt = "fdt";
+			fpga = "fpga";
+		};
+	};
+};
