@@ -9,6 +9,7 @@
 #include <asm/u-boot.h>
 #include <asm/utils.h>
 #include <image.h>
+#include <malloc.h>
 #include <asm/arch/reset_manager.h>
 #include <spl.h>
 #include <asm/arch/system_manager.h>
@@ -162,5 +163,15 @@ int spl_load_fpga_image(struct spl_load_info *info, size_t length,
 	spl_init_ddr_dram();
 
 	return 0;
+}
+
+struct image_header *spl_get_load_buffer(int offset, size_t size)
+{
+	struct image_header *mem = memalign(4, size);
+
+	if (!mem)
+		hang();
+
+	return mem;
 }
 #endif
