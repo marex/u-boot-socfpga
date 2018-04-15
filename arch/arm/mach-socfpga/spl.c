@@ -26,6 +26,7 @@
 #if defined(CONFIG_TARGET_SOCFPGA_ARRIA10)
 #include <asm/arch/pinmux.h>
 #include <asm/arch/fpga_manager.h>
+#include <malloc.h>
 #endif
 
 DECLARE_GLOBAL_DATA_PTR;
@@ -282,6 +283,16 @@ int spl_load_fpga_image(struct spl_load_info *info, size_t length,
 	spl_init_ddr_dram();
 
 	return 0;
+}
+
+void *spl_get_load_buffer(int offset, size_t size)
+{
+	void *mem = memalign(4, size);
+
+	if (!mem)
+		hang();
+
+	return mem;
 }
 #endif
 #endif
