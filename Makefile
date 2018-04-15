@@ -1176,9 +1176,14 @@ ifneq ($(CONFIG_ARCH_SOCFPGA),)
 quiet_cmd_socboot = SOCBOOT $@
 cmd_socboot = cat	spl/u-boot-spl.sfp spl/u-boot-spl.sfp	\
 			spl/u-boot-spl.sfp spl/u-boot-spl.sfp	\
-			u-boot.img > $@ || rm -f $@
+			$2 > $@ || rm -f $@
+ifdef CONFIG_TARGET_SOCFPGA_ARRIA10
+u-boot-with-spl.sfp: spl/u-boot-spl.sfp u-boot.itb FORCE
+	$(call if_changed,socboot,u-boot.itb)
+else
 u-boot-with-spl.sfp: spl/u-boot-spl.sfp u-boot.img FORCE
-	$(call if_changed,socboot)
+	$(call if_changed,socboot,u-boot.img)
+endif
 endif
 
 # x86 uses a large ROM. We fill it with 0xff, put the 16-bit stuff (including
