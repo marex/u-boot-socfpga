@@ -297,5 +297,10 @@ void *spl_get_load_buffer(int offset, size_t size)
 
 	return mem;
 }
+#elif defined(CONFIG_SPL_LOAD_FIT_FULL)
+void *spl_get_load_buffer(int offset, size_t size)
+{
+	return (void *)0x100000;
+}
 #endif
 #endif
