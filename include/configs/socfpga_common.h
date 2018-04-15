@@ -282,6 +282,24 @@ unsigned int cm_get_qspi_controller_clk_hz(void);
 #elif defined(CONFIG_TARGET_SOCFPGA_ARRIA10)
 #define CONFIG_SYS_NAND_U_BOOT_OFFS	0x100000
 #endif
+
+/* UBI configuration */
+#define CONFIG_SPL_UBI			1
+#define CONFIG_SPL_UBI_INFO_ADDR	0x04000000
+#define CONFIG_SPL_UBI_MAX_VOL_LEBS	16
+#define CONFIG_SPL_UBI_MAX_PEB_SIZE	(128 * 1024)
+#define CONFIG_SPL_UBI_MAX_PEBS		16
+#define CONFIG_SPL_UBI_VOL_IDS		2
+#define CONFIG_SPL_UBI_LOAD_MONITOR_ID	1
+#define CONFIG_SPL_UBI_PEB_OFFSET	8
+#define CONFIG_SPL_UBI_VID_OFFSET	2048
+#define CONFIG_SPL_UBI_LEB_START	4096
+#define CONFIG_SYS_NAND_BLOCK_SIZE	(128 * 1024)
+
+/* environment organization */
+#define CONFIG_ENV_UBI_PART		"uboot-env"
+#define CONFIG_ENV_UBI_VOLUME		"env0"
+#define CONFIG_ENV_UBI_VOLUME_REDUND	"env1"
 #endif
 
 /*

@@ -61,6 +61,13 @@
 		};
 	};
 
+	signature {
+		u-boot,dm-pre-reloc;
+		key-dev {
+			u-boot,dm-pre-reloc;
+		};
+	};
+
 	soc {
 		u-boot,dm-pre-reloc;
 	};
