@@ -201,6 +201,10 @@ void spl_board_init(void)
 	/* Release UART from reset */
 	socfpga_reset_uart(0);
 
+	/* FIXME: Release all the resets */
+	writel(0, 0xffd05000 + 0x24);
+	writel(0, 0xffd05000 + 0x28);
+
 	/* enable console uart printing */
 	preloader_console_init();
 
