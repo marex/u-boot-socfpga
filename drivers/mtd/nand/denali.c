@@ -1365,3 +1365,19 @@ free_buf:
 
 	return ret;
 }
+#ifdef CONFIG_SPL_BUILD
+int nand_spl_read_block(int block, int offset, int len, void *dst)
+{
+	size_t count = len, actual = 0;
+	struct mtd_info *mtd;
+
+	mtd = get_nand_dev_by_index(nand_curr_device);
+	if (!mtd)
+		hang();
+
+	return nand_read_skip_bad(mtd, mtd->erasesize * block + offset,
+				  &count, &actual, len, dst);
+}
+
+void nand_deselect(void) {}
+#endif
