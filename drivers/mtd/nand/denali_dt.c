@@ -88,14 +88,14 @@ static int denali_dt_probe(struct udevice *dev)
 	denali->host = devm_ioremap(dev, res.start, resource_size(&res));
 
 	ret = clk_get_by_index(dev, 0, &clk);
-	if (ret)
-		return ret;
-
-	ret = clk_enable(&clk);
-	if (ret)
-		return ret;
-
-	denali->clk_x_rate = clk_get_rate(&clk);
+	if (ret) {
+		denali->clk_x_rate = 200000000;
+	} else {
+		ret = clk_enable(&clk);
+		if (ret)
+			return ret;
+		denali->clk_x_rate = clk_get_rate(&clk);
+	}
 
 	return denali_init(denali);
 }
