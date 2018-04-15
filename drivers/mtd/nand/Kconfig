@@ -258,6 +258,14 @@ config SPL_NAND_SIMPLE
 	help
 	  Support for NAND boot using simple NAND drivers that
 	  expose the cmd_ctrl() interface.
+
+config SPL_NAND_FRAMEWORK
+	bool "Compile the entire NAND framework into the SPL"
+	help
+	  Some drivers require a lot of functionality from the NAND framework
+	  core when used in SPL. This option allows compiling the full NAND
+	  framework into the SPL instead of it's reduced version.
+
 endif
 
 endif   # if NAND
