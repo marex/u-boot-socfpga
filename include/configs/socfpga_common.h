@@ -6,9 +6,6 @@
 #ifndef __CONFIG_SOCFPGA_COMMON_H__
 #define __CONFIG_SOCFPGA_COMMON_H__
 
-/* Virtual target or real hardware */
-#undef CONFIG_SOCFPGA_VIRTUAL_TARGET
-
 /*
  * High level configuration
  */
@@ -77,7 +74,7 @@
 /*
  * Ethernet on SoC (EMAC)
  */
-#if defined(CONFIG_CMD_NET) && !defined(CONFIG_SOCFPGA_VIRTUAL_TARGET)
+#ifdef CONFIG_CMD_NET
 #define CONFIG_DW_ALTDESCRIPTOR
 #define CONFIG_MII
 #endif
