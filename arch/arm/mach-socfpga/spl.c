@@ -25,6 +25,7 @@
 #include <watchdog.h>
 #if defined(CONFIG_TARGET_SOCFPGA_ARRIA10)
 #include <asm/arch/pinmux.h>
+#include <asm/arch/fpga_manager.h>
 #endif
 
 DECLARE_GLOBAL_DATA_PTR;
@@ -179,6 +180,14 @@ void board_init_f(ulong dummy)
 	gd->malloc_base = CONFIG_SYS_TEXT_BASE + (1024 * 1024);
 }
 #elif defined(CONFIG_TARGET_SOCFPGA_ARRIA10)
+static void spl_init_ddr_dram(void)
+{
+	DECLARE_GLOBAL_DATA_PTR;
+
+	config_pins(gd->fdt_blob, "shared");
+	ddr_calibration_sequence();
+}
+
 void spl_board_init(void)
 {
 	/* configuring the clock based on handoff */
@@ -198,6 +207,10 @@ void spl_board_init(void)
 
 	/* Add device descriptor to FPGA device table */
 	socfpga_fpga_add();
+
+	/* If the FPGA is already loaded, ie. from EPCQ, start DDR DRAM */
+	if (is_fpgamgr_early_user_mode())
+		spl_init_ddr_dram();
 }
 
 void board_init_f(ulong dummy)
@@ -230,4 +243,45 @@ int board_fit_config_name_match(const char *name)
 
 	return 0;
 }
+
+static char buf[32 * 1024] __aligned(4);
+
+int spl_load_fpga_image(struct spl_load_info *info, size_t length,
+			int nr_sectors, int sector_offset)
+{
+	u32 csize, step = sizeof(buf) / info->bl_len;
+	int i, ret;
+
+	ret = fpgamgr_program_init((u32 *)buf, length);
+	if (ret) {
+		printf("FPGA: Init with periph rbf failed with error.");
+		printf("code %d\n", ret);
+		return -EPERM;
+	}
+
+	for (i = 0; i < nr_sectors; i += step) {
+		csize = min(sizeof(buf), length);
+
+		if (info->read(info, sector_offset,
+			       step, (void *)buf) != step) {
+			return -EIO;
+		}
+
+		fpgamgr_program_write((void *)buf, csize);
+		sector_offset += step;
+		length -= csize;
+	}
+
+	if (fpgamgr_wait_early_user_mode() != -ETIMEDOUT)
+		puts("FPGA: Early Release Succeeded.\n");
+	else {
+		puts("FPGA: Failed to see Early Release.\n");
+		return -EIO;
+	}
+
+	spl_init_ddr_dram();
+
+	return 0;
+}
+#endif
 #endif

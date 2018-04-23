@@ -94,6 +94,7 @@ int fpgamgr_program_init(u32 * rbf_data, size_t rbf_size);
 int fpgamgr_program_finish(void);
 int is_fpgamgr_user_mode(void);
 int fpgamgr_wait_early_user_mode(void);
+int is_fpgamgr_early_user_mode(void);
 
 #endif /* __ASSEMBLY__ */
 
