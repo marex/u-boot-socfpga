@@ -23,6 +23,7 @@
 #include <fdtdec.h>
 #include <watchdog.h>
 #include <asm/arch/pinmux.h>
+#include <asm/arch/fpga_manager.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -66,6 +67,14 @@ u32 spl_boot_mode(const u32 boot_device)
 }
 #endif
 
+static void spl_init_ddr_dram(void)
+{
+	DECLARE_GLOBAL_DATA_PTR;
+
+	config_pins(gd->fdt_blob, "shared");
+	ddr_calibration_sequence();
+}
+
 void spl_board_init(void)
 {
 	/* enable console uart printing */
@@ -73,6 +82,10 @@ void spl_board_init(void)
 	WATCHDOG_RESET();
 
 	arch_early_init_r();
+
+	/* If the FPGA is already loaded, ie. from EPCQ, start DDR DRAM */
+	if (is_fpgamgr_early_user_mode())
+		spl_init_ddr_dram();
 }
 
 void board_init_f(ulong dummy)
@@ -107,6 +120,46 @@ int board_fit_config_name_match(const char *name)
 {
 	/* Just empty function now - can't decide what to choose */
 	debug("%s: %s\n", __func__, name);
+
+	return 0;
+}
+
+static char buf[32 * 1024] __aligned(4);
+
+int spl_load_fpga_image(struct spl_load_info *info, size_t length,
+			int nr_sectors, int sector_offset)
+{
+	u32 csize, step = sizeof(buf) / info->bl_len;
+	int i, ret;
+
+	ret = fpgamgr_program_init((u32 *)buf, length);
+	if (ret) {
+		printf("FPGA: Init with periph rbf failed with error.");
+		printf("code %d\n", ret);
+		return -EPERM;
+	}
+
+	for (i = 0; i < nr_sectors; i += step) {
+		csize = min(sizeof(buf), length);
+
+		if (info->read(info, sector_offset,
+			       step, (void *)buf) != step) {
+			return -EIO;
+		}
+
+		fpgamgr_program_write((void *)buf, csize);
+		sector_offset += step;
+		length -= csize;
+	}
+
+	if (fpgamgr_wait_early_user_mode() != -ETIMEDOUT)
+		puts("FPGA: Early Release Succeeded.\n");
+	else {
+		puts("FPGA: Failed to see Early Release.\n");
+		return -EIO;
+	}
+
+	spl_init_ddr_dram();
 
 	return 0;
 }
