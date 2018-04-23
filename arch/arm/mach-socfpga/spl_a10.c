@@ -101,3 +101,13 @@ void board_init_f(ulong dummy)
 	config_dedicated_pins(gd->fdt_blob);
 	WATCHDOG_RESET();
 }
+
+#ifdef CONFIG_SPL_LOAD_FIT
+int board_fit_config_name_match(const char *name)
+{
+	/* Just empty function now - can't decide what to choose */
+	debug("%s: %s\n", __func__, name);
+
+	return 0;
+}
+#endif
