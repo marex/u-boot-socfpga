@@ -297,4 +297,13 @@ void spl_invoke_atf(struct spl_image_info *spl_image);
  * can implement 'board_return_to_bootrom'.
  */
 void board_return_to_bootrom(void);
+
+/**
+ * spl_get_load_buffer() - get buffer for loading partial image data
+ *
+ * Returns memory area which can be populated by partial image data,
+ * ie. uImage or fitImage header.
+ */
+void *spl_get_load_buffer(int offset, size_t size);
+
 #endif
