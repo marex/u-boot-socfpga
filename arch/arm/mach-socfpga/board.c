@@ -94,3 +94,11 @@ int g_dnl_board_usb_cable_connected(void)
 	return 1;
 }
 #endif
+
+#if defined(CONFIG_TARGET_SOCFPGA_ARRIA10) && \
+    !defined(CONFIG_SPL_BUILD) && defined(CONFIG_OF_SEPARATE)
+void *board_fdt_blob_setup(void)
+{
+	return (void *)0xf00000;
+}
+#endif
