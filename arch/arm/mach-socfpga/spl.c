@@ -219,6 +219,8 @@ void spl_board_init(void)
 
 void board_init_f(ulong dummy)
 {
+	dcache_disable();
+
 	/*
 	 * Configure Clock Manager to use intosc clock instead external osc to
 	 * ensure success watchdog operation. We do it as early as possible.
