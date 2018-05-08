@@ -212,9 +212,19 @@ void spl_board_init(void)
 	/* Add device descriptor to FPGA device table */
 	socfpga_fpga_add();
 
-	/* If the FPGA is already loaded, ie. from EPCQ, start DDR DRAM */
-	if (is_fpgamgr_early_user_mode())
-		spl_init_ddr_dram();
+	for(;;) {
+		if (fpgamgr_wait_early_user_mode() != -ETIMEDOUT) {
+			spl_init_ddr_dram();
+			break;
+		}
+	}
+
+	if (readl(0xffe00040) == 0x1337c0d3) {
+		printf("JTAG boot detected, stopping\n");
+
+		while (readl(0xffe00040) == 0x1337c0d3)
+			;
+	}
 }
 
 void board_init_f(ulong dummy)
