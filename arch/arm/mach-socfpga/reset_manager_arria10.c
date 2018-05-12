@@ -29,14 +29,8 @@ static const struct socfpga_system_manager *sysmgr_regs =
 
 void socfpga_reset_uart(int assert)
 {
-	unsigned int com_port;
-
-	com_port = uart_com_port(gd->fdt_blob);
-
-	if (com_port == SOCFPGA_UART1_ADDRESS)
-		socfpga_per_reset(SOCFPGA_RESET(UART1), assert);
-	else if (com_port == SOCFPGA_UART0_ADDRESS)
-		socfpga_per_reset(SOCFPGA_RESET(UART0), assert);
+	socfpga_per_reset(SOCFPGA_RESET(UART1), assert);
+	socfpga_per_reset(SOCFPGA_RESET(UART0), assert);
 }
 
 static const u32 per0fpgamasks[] = {
