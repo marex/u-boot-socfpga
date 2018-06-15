@@ -74,6 +74,7 @@ static void spl_init_ddr_dram(void)
 
 	config_pins(gd->fdt_blob, "shared");
 	ddr_calibration_sequence();
+	config_pins(gd->fdt_blob, "fpga");
 }
 
 void spl_board_init(void)
