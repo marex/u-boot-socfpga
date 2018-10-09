@@ -125,6 +125,8 @@ int arch_misc_init(void)
 
 int arch_early_init_r(void)
 {
+	socfpga_fpga_add();
+
 	return 0;
 }
 

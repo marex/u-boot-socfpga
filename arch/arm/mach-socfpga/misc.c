@@ -88,6 +88,27 @@ int overwrite_console(void)
 #endif
 
 #ifdef CONFIG_FPGA
+#ifdef CONFIG_FPGA_STRATIX10
+/*
+ * FPGA programming support for SoC FPGA Stratix 10
+ */
+static Altera_desc altera_fpga[] = {
+	{
+		/* Family */
+		Intel_FPGA_Stratix10,
+		/* Interface type */
+		secure_device_manager_mailbox,
+		/* No limitation as additional data will be ignored */
+		-1,
+		/* No device function table */
+		NULL,
+		/* Base interface address specified in driver */
+		NULL,
+		/* No cookie implementation */
+		0
+	},
+};
+#else
 /*
  * FPGA programming support for SoC FPGA Cyclone V
  */
@@ -107,6 +128,7 @@ static Altera_desc altera_fpga[] = {
 		0
 	},
 };
+#endif
 
 /* add device descriptor to FPGA device table */
 void socfpga_fpga_add(void)
